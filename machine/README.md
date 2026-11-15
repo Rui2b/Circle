@@ -1,0 +1,42 @@
+# 机器码实验：图形界面引导
+
+本目录与上一版原型分开，用于重新开始制作。`gui-bootstrap.hex` 直接记录手写的十六进制文件字节；它没有通过汇编器或高级语言编译器生成。文件包含 PE 头、x86-64 指令、Windows 导入表和文本。
+
+Windows 自带的 `certutil` 可以把这些字节转换为可执行文件：
+
+```text
+certutil -f -decodehex machine\gui-bootstrap.hex machine\gui-bootstrap.exe 4
+```
+
+该可执行文件验证双语界面。首个窗口使用 Windows 的“是／否／取消”按钮。“是”进入中文提示，“否”进入英文提示，取消或按 Esc 直接退出。默认选中“取消”。目前只检查了 PE 结构和分支地址，尚未实际操作窗口。安装文件和配置 PATH 的功能待实现。
+
+| 文件偏移 | 内容 |
+| --- | --- |
+| `0x0000` | DOS 头；`0x003c` 指向 PE 头。 |
+| `0x0080` | x86-64 PE 头，子系统为 Windows GUI。 |
+| `0x0200` | 入口指令：调用 `MessageBoxW`、根据结果选择中文或英文消息，再调用 `ExitProcess`。 |
+| `0x0400` | Windows 函数导入表和 UTF-16 文本。 |
+
+下一步仍需要验证此入口、实现真正的图形化安装流程、重新制作语言执行器及命令行入口，并完成端到端测试。上一版 `cc.exe` 和 `CircleSetup.exe` 仍属于不符合严格构建要求的旧原型，不能作为本次重做的最终结果。
+
+新版本使用 `.cir` 扩展名。手写的 `circle.hex` 已实现命令行入口，可用以下命令转换并运行：
+
+```text
+certutil -f -decodehex machine\circle.hex machine\circle.exe 4
+.\machine\circle.exe help
+.\machine\circle.exe --help
+.\machine\circle.exe version
+.\machine\circle.exe build examples\add.cir -o add.exe
+.\add.exe
+$LASTEXITCODE
+```
+
+已实测无参数时显示帮助，未知命令返回退出码 1。`circle run 文件.cir` 按 1 KiB 分块读取。当前接受十进制整数和以 `+` 连接的整数表达式，将结果作为进程退出码。操作数和结果的有效范围为 `0` 至 `255`，符号两侧可有 ASCII 空白。空文件或纯空白返回 0。缺少操作数、超出范围及其他语法报告 `Invalid source`。文件打开或读取失败报告 `Cannot open.`。两种错误均返回 1，并向标准错误输出消息。运行 `examples\add.cir` 后，PowerShell 的 `$LASTEXITCODE` 为 42。开发顺序与验收标准见 [ROADMAP.md](../ROADMAP.md)。
+
+`circle run` 和 `circle build` 都支持在表达式末尾加 `!`。出现该标记时，程序以十进制加换行写入标准输出，成功时返回退出码 0。示例 `examples\print.cir` 输出 `42`。省略标记时，表达式结果仍作为进程退出码。
+
+最后一个操作数可写为 `?`。例如，在 PowerShell 中运行 `'5' | .\machine\circle.exe run examples\input.cir`，会输出 `24`。直接运行和编译产物都在执行时从标准输入取一个 ASCII 数字 `0` 至 `9`。输入为空、首字节不是数字、读取失败或结果超出 `0` 至 `255` 时返回 2。此版本只读取首字节。
+
+源码可以在最终表达式前声明多个局部整数。例如 `left: u8 = 19; limit = 23; left + limit!` 输出 `42`。当前支持显式类型 `u8`，省略类型时也按 `u8` 检查，初值须为 `0` 至 `255` 的十进制字面量。名称由 1 至 8 个 ASCII 小写字母组成，每个程序最多声明 26 个变量。未知类型、未声明的引用和重复声明会报错。编译器在编译时解析变量引用。
+
+`circle build 源文件.cir -o 输出.exe` 生成 1.5 KiB 的 Windows x64 程序。编译器将除最后一个操作数外的各项合为一个部分和。生成的程序先检查 `%LOCALAPPDATA%\Circle\circle.exe` 是否存在且为文件，失败时立即以 126 退出，再完成求和，并根据标记读取输入、写入标准输出或返回结果。安装检查限于文件路径，尚未校验身份、签名或版本。输出文件已存在时返回 `Cannot write output.`。编译器内嵌 [exit-template.hex](exit-template.hex) 的 PE 字节，生成时写入文件偏移 `0x0281` 和 `0x0287` 的操作数，以及偏移 `0x0298` 的输入、输出标记。双语安装器仍待实现，测试使用工作区内的模拟安装目录。
