@@ -1,6 +1,6 @@
 # Circle
 
-新版 Circle 原型由手写 x86-64 机器码实现，支持 Windows x64。当前可运行和编译整数加法、多个局部变量、显式 `u8`、单数字输入以及标准输出。
+新版 Circle 原型由手写 x86-64 机器码实现，支持 Windows x64。当前可运行和编译整数加法、多个局部变量、显式 `u8`、`u16` 和 `u32`、单数字输入以及标准输出。
 
 ```powershell
 .\machine\circle.exe --help
