@@ -31,7 +31,7 @@ certutil -f -decodehex machine\circle.hex machine\circle.exe 4
 $LASTEXITCODE
 ```
 
-已实测无参数时显示帮助，未知命令返回退出码 1。`circle run 文件.cir` 按 1 KiB 分块读取。当前接受十进制整数和以 `+` 连接的整数表达式，将结果作为进程退出码。操作数和结果的有效范围为 `0` 至 `4294967295`，符号两侧可有 ASCII 空白。空文件或纯空白返回 0。缺少操作数、超出范围及其他语法报告 `Invalid source`。文件打开或读取失败报告 `Cannot open.`。两种错误均返回 1，并向标准错误输出消息。运行 `examples\add.cir` 后，PowerShell 的 `$LASTEXITCODE` 为 42。开发顺序与验收标准见 [ROADMAP.md](../ROADMAP.md)。
+已实测无参数时显示帮助，未知命令返回退出码 1。`circle run 文件.cir` 按 1 KiB 分块读取。当前接受十进制整数和以 `+` 连接的整数表达式，将结果作为进程退出码。操作数和结果的有效范围为 `0` 至 `4294967295`，符号两侧可有 ASCII 空白。空文件或纯空白返回 0。缺少操作数、超出范围及其他语法以 `行:列: Invalid source` 报告。位置从 1 开始，列按源码字节计数，指向检测到问题的字节或文件末尾。文件打开或读取失败报告 `Cannot open.`。两种错误均返回 1，并向标准错误输出消息。运行 `examples\add.cir` 后，PowerShell 的 `$LASTEXITCODE` 为 42。开发顺序与验收标准见 [ROADMAP.md](../ROADMAP.md)。
 
 `circle run` 和 `circle build` 都支持在表达式末尾加 `!`。出现该标记时，程序以十进制加换行写入标准输出，成功时返回退出码 0。示例 `examples\print.cir` 输出 `42`。省略标记时，表达式结果仍作为进程退出码。
 
