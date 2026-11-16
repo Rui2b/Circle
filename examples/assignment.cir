@@ -1,0 +1,4 @@
+total: u8 = 19;
+step = 23;
+set total = total + step;
+total!
