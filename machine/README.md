@@ -41,6 +41,8 @@ $LASTEXITCODE
 
 `#` 开始行注释，到换行或文件末尾结束，可单独成行或放在代码后。示例见 [readable.cir](../examples/readable.cir)。
 
+文件开头可带 UTF-8 BOM，BOM 不计入错误列号。示例见 [utf8-bom.cir](../examples/utf8-bom.cir)。
+
 可以在最终表达式前用 `set 名称 = 表达式;` 更新已声明的局部变量。字面量、局部变量和加法构成的赋值按出现顺序求值，结果必须符合目标变量声明时的类型。编译器在生成 EXE 前求出这些值。`set` 是保留字。
 
 `set 名称 = ?;` 将变量绑定到运行时读取的一个 ASCII 数字。每份源码最多使用一次这种赋值，目标变量随后必须在最终表达式中引用一次，作为加法的最后一个操作数、条件测试或循环次数。不能在后续赋值中重新设置该变量或读取它。示例见 [assignment-input.cir](../examples/assignment-input.cir)。
