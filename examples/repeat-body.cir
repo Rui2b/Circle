@@ -1,0 +1,5 @@
+count = 0;
+set count = ?;
+left = 3;
+right = 4;
+count {left; right}!
