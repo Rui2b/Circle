@@ -1,0 +1,4 @@
+# Combine two increments.
+part_1 = 19; # First value
+part_2 = 23;
+part_1 + part_2! # Prints 42
