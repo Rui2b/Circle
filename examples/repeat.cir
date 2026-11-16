@@ -1,0 +1,3 @@
+count = 6;
+step = 7;
+count {step}!
