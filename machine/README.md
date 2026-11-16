@@ -53,7 +53,7 @@ $LASTEXITCODE
 
 [CircleSetup.exe](../CircleSetup.exe) 内含当前版本的编译器，并使用项目 logo 作为 Windows 图标。默认显示中英文选择、安装确认及结果提示。确认后安装到 `%LOCALAPPDATA%\Circle\circle.exe`，使用同目录临时文件写入，再替换目标。取消不写入文件。
 
-`CircleSetup.exe --quiet` 使用相同的文件安装路径。退出码 0 表示成功，1 表示失败，2 表示用户取消。安装器尚未自动配置 PATH，也没有卸载入口。
+`CircleSetup.exe --quiet` 执行相同的文件安装和 PATH 更新。退出码 0 表示成功，1 表示安装失败，2 表示用户取消，3 表示文件已安装但 PATH 更新失败。安装器保留用户 PATH 的原有内容和注册表值类型，按大小写不敏感的完整目录项检查重复。对可展开值，还识别 `%LOCALAPPDATA%\Circle`。更新后向 Windows 发送环境变更通知。卸载入口尚未实现。
 
 安装器的手写 PE 字节位于 [circle-setup.hex](circle-setup.hex)。用以下 Windows 命令复现：
 
@@ -61,4 +61,4 @@ $LASTEXITCODE
 certutil -f -decodehex machine\circle-setup.hex CircleSetup.exe 4
 ```
 
-内嵌编译器起始于安装器二进制的 `0x0b00`，本版长度为 `0x2600` 字节。更新编译器时，需要同步更新安装包内的负载及长度。
+内嵌编译器起始于安装器二进制的 `0x1700`，本版长度为 `0x2600` 字节。更新编译器时，需要同步更新安装包内的负载及长度。
