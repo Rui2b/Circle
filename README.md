@@ -17,6 +17,8 @@ circle build examples\repeat.cir -o repeat.exe
 
 如果安装器报告 PATH 更新失败，可用完整路径 `%LOCALAPPDATA%\Circle\circle.exe`，也可手动把安装目录加入用户 PATH。编译产物在启动时检查安装目录，找不到 `circle.exe` 会返回 126。
 
+要卸载，在安装器所在的目录运行 `.\CircleSetup.exe --uninstall`，选择语言并确认。卸载只移除安装的 `circle.exe` 和匹配的用户 PATH 项。
+
 ## 当前能力
 
 支持 `.cir` 源码、`u8`、`u16`、`u32`、局部变量和赋值、整数加法、单数字输入、标准输出、条件表达式及固定步长的计数循环。当前语法和限制见 [机器码说明](machine/README.md)，后续工作见 [开发任务清单](ROADMAP.md)。

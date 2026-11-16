@@ -53,7 +53,9 @@ $LASTEXITCODE
 
 [CircleSetup.exe](../CircleSetup.exe) 内含当前版本的编译器，并使用项目 logo 作为 Windows 图标。默认显示中英文选择、安装确认及结果提示。确认后安装到 `%LOCALAPPDATA%\Circle\circle.exe`，使用同目录临时文件写入，再替换目标。取消不写入文件。
 
-`CircleSetup.exe --quiet` 执行相同的文件安装和 PATH 更新。退出码 0 表示成功，1 表示安装失败，2 表示用户取消，3 表示文件已安装但 PATH 更新失败。安装器保留用户 PATH 的原有内容和注册表值类型，按大小写不敏感的完整目录项检查重复。对可展开值，还识别 `%LOCALAPPDATA%\Circle`。更新后向 Windows 发送环境变更通知。卸载入口尚未实现。
+`CircleSetup.exe --quiet` 执行相同的文件安装和 PATH 更新。安装器保留用户 PATH 的原有内容和注册表值类型，按大小写不敏感的完整目录项检查重复。对可展开值，还识别 `%LOCALAPPDATA%\Circle`。更新后向 Windows 发送环境变更通知。
+
+`CircleSetup.exe --uninstall` 打开中英文卸载确认界面，`--quiet-uninstall` 静默卸载。卸载移除当前用户安装目录下的 `circle.exe`，并删除 PATH 中第一个与安装目录完全匹配的绝对路径项。其他文件、其他 PATH 项和手动添加的可展开别名会保留。文件或对应 PATH 项已不存在时，卸载仍可成功。退出码 0 表示成功，1 表示文件操作失败或参数错误，2 表示用户取消，3 表示文件操作已完成但 PATH 更新失败。
 
 安装器的手写 PE 字节位于 [circle-setup.hex](circle-setup.hex)。用以下 Windows 命令复现：
 
