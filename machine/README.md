@@ -17,7 +17,7 @@ certutil -f -decodehex machine\gui-bootstrap.hex machine\gui-bootstrap.exe 4
 | `0x0200` | 入口指令：调用 `MessageBoxW`、根据结果选择中文或英文消息，再调用 `ExitProcess`。 |
 | `0x0400` | Windows 函数导入表和 UTF-16 文本。 |
 
-下一步仍需要验证此入口、实现真正的图形化安装流程、重新制作语言执行器及命令行入口，并完成端到端测试。上一版 `cc.exe` 和 `CircleSetup.exe` 仍属于不符合严格构建要求的旧原型，不能作为本次重做的最终结果。
+该引导实验现由仓库根目录的正式安装入口取代。`cc.exe` 属于早期原型。
 
 新版本使用 `.cir` 扩展名。手写的 `circle.hex` 已实现命令行入口，可用以下命令转换并运行：
 
@@ -47,4 +47,18 @@ $LASTEXITCODE
 
 计数循环写作 `次数 {步长}`。它从 0 开始，在运行期把步长累加指定次数。`6 {7}!` 输出 `42`，零次循环输出 `0`。次数和步长可以引用局部整数或使用加法。最多循环 65535 次，累加结果超出 `u32` 范围会在执行或生成 EXE 前报错。目前循环体只包含一个固定步长表达式。
 
-`circle build 源文件.cir -o 输出.exe` 生成 1.5 KiB 的 Windows x64 程序。编译器将除最后一个操作数外的各项合为一个部分和。生成的程序先检查 `%LOCALAPPDATA%\Circle\circle.exe` 是否存在且为文件，失败时立即以 126 退出，再根据源码完成求和、读取输入、选支或计数循环，并输出结果或以结果退出。安装检查限于文件路径，尚未校验身份、签名或版本。输出文件已存在时返回 `Cannot write output.`。编译器内嵌 [exit-template.hex](exit-template.hex) 的 PE 字节，生成时写入文件偏移 `0x0281` 和 `0x0287` 的操作数、偏移 `0x0298` 的模式标记，以及偏移 `0x029c` 的运行期非零分支结果或循环次数。双语安装器仍待实现，测试使用工作区内的模拟安装目录。
+`circle build 源文件.cir -o 输出.exe` 生成 1.5 KiB 的 Windows x64 程序。编译器将除最后一个操作数外的各项合为一个部分和。生成的程序先检查 `%LOCALAPPDATA%\Circle\circle.exe` 是否存在且为文件，失败时立即以 126 退出，再根据源码完成求和、读取输入、选支或计数循环，并输出结果或以结果退出。安装检查限于文件路径，尚未校验身份、签名或版本。输出文件已存在时返回 `Cannot write output.`。编译器内嵌 [exit-template.hex](exit-template.hex) 的 PE 字节，生成时写入文件偏移 `0x0281` 和 `0x0287` 的操作数、偏移 `0x0298` 的模式标记，以及偏移 `0x029c` 的运行期非零分支结果或循环次数。图形安装器会创建该安装路径。
+
+## 双语图形安装器
+
+[CircleSetup.exe](../CircleSetup.exe) 内含当前版本的编译器，并使用项目 logo 作为 Windows 图标。默认显示中英文选择、安装确认及结果提示。确认后安装到 `%LOCALAPPDATA%\Circle\circle.exe`，使用同目录临时文件写入，再替换目标。取消不写入文件。
+
+`CircleSetup.exe --quiet` 使用相同的文件安装路径。退出码 0 表示成功，1 表示失败，2 表示用户取消。安装器尚未自动配置 PATH，也没有卸载入口。
+
+安装器的手写 PE 字节位于 [circle-setup.hex](circle-setup.hex)。用以下 Windows 命令复现：
+
+```text
+certutil -f -decodehex machine\circle-setup.hex CircleSetup.exe 4
+```
+
+内嵌编译器起始于安装器二进制的 `0x0b00`，本版长度为 `0x2600` 字节。更新编译器时，需要同步更新安装包内的负载及长度。
