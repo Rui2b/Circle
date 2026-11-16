@@ -1,0 +1,3 @@
+digit: u8 = 0;
+set digit = ?;
+19 + digit!
