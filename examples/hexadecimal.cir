@@ -1,0 +1,2 @@
+mask: u8 = 0xFF;
+mask & 0x2a!
