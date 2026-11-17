@@ -43,7 +43,9 @@ $LASTEXITCODE
 
 文件开头可带 UTF-8 BOM，BOM 不计入错误列号。示例见 [utf8-bom.cir](../examples/utf8-bom.cir)。
 
-最终表达式支持一次无符号小于 `<`、大于 `>` 、不大于 `<=`、不小于 `>=` 或相等 `==` 比较，成立时结果为 1，否则为 0。两侧可以各自包含加法，比较在编译时求值。这些比较也可以作为条件，示例见 [range.cir](../examples/range.cir)。
+最终表达式支持一次无符号小于 `<`、大于 `>` 、不大于 `<=`、不小于 `>=` 、相等 `==` 或不等 `!=` 比较，成立时结果为 1，否则为 0。两侧可以各自包含加法，比较在编译时求值。这些比较也可以作为条件，示例见 [range.cir](../examples/range.cir)。
+
+`!=` 中的 `!` 和 `=` 必须相邻。单独的 `!` 仍为输出后缀。示例见 [inequality.cir](../examples/inequality.cir)。
 
 比较也可直接作为条件，例如 `left < right ? 42 : 7!`。比较操作数仍在编译时求值。示例见 [comparison-branch.cir](../examples/comparison-branch.cir)。
 
