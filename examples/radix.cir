@@ -1,3 +1,4 @@
-mask: u8 = 0b1111_1111;
-answer = 0o52;
-mask & answer!
+mask: u8 = 0B1111_1111;
+answer = 0O51;
+offset = 0X01;
+mask & answer + offset!
