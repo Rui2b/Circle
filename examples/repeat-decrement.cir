@@ -1,0 +1,5 @@
+count = 0;
+set count = ?;
+total: u32 = 72;
+step = 5;
+count {total -= step}!
